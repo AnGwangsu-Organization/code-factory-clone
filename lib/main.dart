@@ -1,4 +1,4 @@
-import 'package:code_factory_clone/user/view/login_screen.dart';
+import 'package:code_factory_clone/common/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class _APP extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen()
+      home: SplashScreen()
     );
   }
 }

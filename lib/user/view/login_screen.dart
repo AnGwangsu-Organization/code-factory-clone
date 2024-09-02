@@ -3,9 +3,12 @@ import 'dart:io';
 
 import 'package:code_factory_clone/common/component/custom_text_form_field.dart';
 import 'package:code_factory_clone/common/const/colors.dart';
+import 'package:code_factory_clone/common/const/data.dart';
 import 'package:code_factory_clone/common/layout/default_layout.dart';
+import 'package:code_factory_clone/common/view/root_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String email = '';
+  String username = '';
   String password = '';
 
   @override
@@ -48,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hitText: '이메일을 입력해주세요.',
                   obscureText: false,
                   onChanged: (String value) {
-                    email = value;
+                    username = value;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -61,22 +64,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 ElevatedButton(
                     onPressed: () async {
-                      // email:password
-                      final rawString = '${email}:${password}';
-
-                      // dart에서 base64로 인코딩하는 방법
-                      Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                      String token = stringToBase64.encode(rawString);
-
                       final res = await dio.post(
-                        'http://${ip}/auth/login',
+                        'http://$ip/auth/login',
+                        data: {
+                          'username':username,
+                          'password':password
+                        },
                         options: Options(
                           headers: {
-                            'authorization': 'Basic ${token}'
+                            'Content-Type': 'application/json',
                           }
                         )
                       );
-                      print(res);
+
+                      final refreshToken = res.data['refreshToken'];
+                      final accessToken = res.data['accessToken'];
+
+                      await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
+                      await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => RootTab()
+                        )
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: PRIMARY_COLOR, // 버튼 배경색을 파란색으로 설정
