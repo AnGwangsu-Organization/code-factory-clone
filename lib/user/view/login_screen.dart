@@ -68,20 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       Codec<String, String> stringToBase64 = utf8.fuse(base64);
                       String token = stringToBase64.encode(rawString);
 
-                      print(ip);
-
-                      // ! dio라는 인스턴스에 options을 넣어주는 객체화를 시켜줘야함
                       final res = await dio.post(
                         'http://${ip}/auth/login',
-                        data: {
-                          'email': email,
-                          'password': password
-                        },
                         options: Options(
                           headers: {
-                            'Content-Type': 'application/json', // JSON 형식의 데이터를 보내기 위해 헤더 설정
-                          },
-                        ),
+                            'authorization': 'Basic ${token}'
+                          }
+                        )
                       );
                       print(res);
                     },
