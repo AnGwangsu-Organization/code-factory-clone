@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:code_factory_clone/common/component/custom_text_form_field.dart';
 import 'package:code_factory_clone/common/const/colors.dart';
 import 'package:code_factory_clone/common/layout/default_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -12,9 +18,15 @@ class _LoginScreenState extends State<LoginScreen> {
   String email = '';
   String password = '';
 
-
   @override
   Widget build(BuildContext context) {
+    final dio = Dio();
+
+    final emulatorIp = '10.0.2.2:3000';
+    final simulatorIp = '127.0.0.1:3000';
+
+    final ip = Platform.isIOS ? simulatorIp : emulatorIp;
+
     return DefaultLayout(
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -36,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hitText: '이메일을 입력해주세요.',
                   obscureText: false,
                   onChanged: (String value) {
-
+                    email = value;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -44,11 +56,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   hitText: '비밀번호를 입력해주세요.',
                   obscureText: true,
                   onChanged: (String value) {
-                    email = value
+                    password = value;
                   },
                 ),
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      // email:password
+                      final rawString = '${email}:${password}';
+
+                      // dart에서 base64로 인코딩하는 방법
+                      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                      String token = stringToBase64.encode(rawString);
+
+                      print(ip);
+
+                      // ! dio라는 인스턴스에 options을 넣어주는 객체화를 시켜줘야함
+                      final res = await dio.post(
+                        'http://${ip}/auth/login',
+                        data: {
+                          'email': email,
+                          'password': password
+                        },
+                        options: Options(
+                          headers: {
+                            'Content-Type': 'application/json', // JSON 형식의 데이터를 보내기 위해 헤더 설정
+                          },
+                        ),
+                      );
+                      print(res);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: PRIMARY_COLOR, // 버튼 배경색을 파란색으로 설정
                     ),
