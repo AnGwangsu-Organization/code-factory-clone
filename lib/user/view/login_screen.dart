@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:code_factory_clone/common/component/custom_text_form_field.dart';
 import 'package:code_factory_clone/common/const/colors.dart';
 import 'package:code_factory_clone/common/const/data.dart';
@@ -8,7 +6,6 @@ import 'package:code_factory_clone/common/layout/default_layout.dart';
 import 'package:code_factory_clone/common/view/root_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +17,27 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String username = 'test@codefactory.ai';
   String password = 'testtest';
+
+
+  // * 화면이 다시 빌드될 경우 실행 됨
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    checkToken();
+  }
+
+  void checkToken() async {
+    final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
+    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
+
+    if(accessToken != null && refreshToken != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const RootTab()),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
