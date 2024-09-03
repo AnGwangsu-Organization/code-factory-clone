@@ -1,5 +1,4 @@
 import 'package:code_factory_clone/common/const/colors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -10,22 +9,22 @@ class RestaurantCard extends StatelessWidget {
   // * 레스토랑 태그
   final List<String> tags;
   // * 별점 수
-  final int ratingCount;
+  final int ratingsCount;
   // * 배달 시간
   final int deliveryTime;
   // * 배달비
   final int deliveryFee;
   // * 별점
-  final double rating;
+  final double ratings;
 
   const RestaurantCard({
     required this.image,
     required this.name,
     required this.tags,
-    required this.ratingCount,
+    required this.ratingsCount,
     required this.deliveryTime,
     required this.deliveryFee,
-    required this.rating,
+    required this.ratings,
 
     super.key
   });
@@ -45,7 +44,7 @@ class RestaurantCard extends StatelessWidget {
           children: [
             Text(
                 name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600
                 ),
@@ -53,7 +52,7 @@ class RestaurantCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               tags.join(' · '),
-              style: TextStyle(
+              style: const TextStyle(
                 color: BODY_TEXT_COLOR,
                 fontSize: 14
               ),
@@ -63,12 +62,12 @@ class RestaurantCard extends StatelessWidget {
               children: [
                 _IconText(
                   icon: Icons.star,
-                  label: rating.toString(),
+                  label: ratings.toString(),
                 ),
                 renderDot(),
                 _IconText(
                   icon: Icons.receipt,
-                  label: ratingCount.toString(),
+                  label: ratingsCount.toString(),
                 ),
                 renderDot(),
                 _IconText(
@@ -90,8 +89,8 @@ class RestaurantCard extends StatelessWidget {
 
 
   Widget renderDot() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4),
       child: Text(
         ' · ',
         style: TextStyle(
@@ -126,7 +125,7 @@ class _IconText extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500
           ),
