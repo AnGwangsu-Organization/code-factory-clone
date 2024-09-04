@@ -42,6 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
     } catch(err) {
       print(err);
+      await storage.deleteAll();
+      Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (_) => const LoginScreen()
+          )
+      );
     }
 
 

@@ -1,5 +1,6 @@
 import 'package:code_factory_clone/common/const/data.dart';
 import 'package:code_factory_clone/restaurant/component/restaurant_card.dart';
+import 'package:code_factory_clone/restaurant/model/restaurant_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:code_factory_clone/common/layout/default_layout.dart';
@@ -12,7 +13,6 @@ class RestaurantScreen extends StatelessWidget {
     final dio = Dio();
 
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-
     final res = await dio.get('http://$ip/restaurant',
       options: Options(
         headers: {
@@ -37,20 +37,10 @@ class RestaurantScreen extends StatelessWidget {
               }
 
               return ListView.separated(itemBuilder: (_, index) {
-                final item = snapshot.data![index];
+                    final item = snapshot.data![index];
+                    final jsonItem = RestaurantModel.fromJson(json: item);
 
-                return RestaurantCard(
-                      image: Image.network(
-                          'http://$ip${item['thumbUrl']}', // * S3는 url을 그대로 넣음
-                          fit: BoxFit.cover,
-                      ),
-                      name: item['name'],
-                      tags: List<String>.from(item['tags']), // * List<dynamic> -> List<String>으로 변경
-                      ratingsCount: item['ratingsCount'],
-                      deliveryTime: item['deliveryTime'],
-                      deliveryFee: item['deliveryFee'],
-                      ratings: item['ratings'],
-                    );
+                    return RestaurantCard.fromModel(model: jsonItem);
                   },
                   separatorBuilder: (_, index) {
                     return const SizedBox(height: 16);

@@ -1,4 +1,5 @@
 import 'package:code_factory_clone/common/const/colors.dart';
+import 'package:code_factory_clone/restaurant/model/restaurant_model.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -28,6 +29,23 @@ class RestaurantCard extends StatelessWidget {
 
     super.key
   });
+
+  factory RestaurantCard.fromModel({
+    required RestaurantModel model,
+}) {
+    return RestaurantCard(
+        image: Image.network(
+          model.thumbUrl, // * S3는 url을 그대로 넣음
+          fit: BoxFit.cover,
+        ),
+        name: model.name,
+        tags: model.tags, // * List<dynamic> -> List<String>으로 변경
+        ratingsCount: model.ratingsCount,
+        deliveryTime: model.deliveryTime,
+        deliveryFee: model.deliveryFee,
+        ratings: model.ratings,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
