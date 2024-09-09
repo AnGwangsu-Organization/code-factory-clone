@@ -18,6 +18,12 @@ class RestaurantCard extends StatelessWidget {
   // * 별점
   final double ratings;
 
+  // * 상세 카드 여부
+  final bool isDetail;
+
+  // * 상세 내용
+  final String? detail;
+
   const RestaurantCard({
     required this.image,
     required this.name,
@@ -26,12 +32,15 @@ class RestaurantCard extends StatelessWidget {
     required this.deliveryTime,
     required this.deliveryFee,
     required this.ratings,
+    this.isDetail = false,
+    this.detail,
 
     super.key
   });
 
   factory RestaurantCard.fromModel({
     required RestaurantModel model,
+    bool isDetail = false
 }) {
     return RestaurantCard(
         image: Image.network(
@@ -51,55 +60,66 @@ class RestaurantCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if(isDetail)
+          image,
+          if(!isDetail)
         // * 테두리를 깍는다
         ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: image,
         ),
         const SizedBox(height: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600
-                ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              tags.join(' · '),
-              style: const TextStyle(
-                color: BODY_TEXT_COLOR,
-                fontSize: 14
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: isDetail ? 16 : 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600
+                  ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _IconText(
-                  icon: Icons.star,
-                  label: ratings.toString(),
+              const SizedBox(height: 8),
+              Text(
+                tags.join(' · '),
+                style: const TextStyle(
+                  color: BODY_TEXT_COLOR,
+                  fontSize: 14
                 ),
-                renderDot(),
-                _IconText(
-                  icon: Icons.receipt,
-                  label: ratingsCount.toString(),
-                ),
-                renderDot(),
-                _IconText(
-                  icon: Icons.timelapse_outlined,
-                  label: '$deliveryTime분',
-                ),
-                renderDot(),
-                _IconText(
-                  icon: Icons.monetization_on,
-                  label: deliveryFee == 0  ? '무료' : deliveryFee.toString(),
-                ),
-              ],
-            )
-          ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _IconText(
+                    icon: Icons.star,
+                    label: ratings.toString(),
+                  ),
+                  renderDot(),
+                  _IconText(
+                    icon: Icons.receipt,
+                    label: ratingsCount.toString(),
+                  ),
+                  renderDot(),
+                  _IconText(
+                    icon: Icons.timelapse_outlined,
+                    label: '$deliveryTime분',
+                  ),
+                  renderDot(),
+                  _IconText(
+                    icon: Icons.monetization_on,
+                    label: deliveryFee == 0  ? '무료' : deliveryFee.toString(),
+                  ),
+                ],
+              ),
+              if(detail != null && isDetail)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(detail!),
+                )
+            ],
+          ),
         )
       ],
     );
