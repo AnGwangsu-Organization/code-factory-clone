@@ -41,9 +41,7 @@ class RestaurantDetailScreen extends StatelessWidget {
               );
             }
             
-            final item = RestaurantDetailModel.fromJson(
-                json: snapshop.data!
-            );
+            final item = RestaurantDetailModel.fromJson(snapshop.data!);
             
             return CustomScrollView(
               slivers: [

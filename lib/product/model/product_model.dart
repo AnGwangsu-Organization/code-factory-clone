@@ -1,8 +1,15 @@
-import 'package:code_factory_clone/common/const/data.dart';
+import 'package:code_factory_clone/common/utils/url_utils.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'product_model.g.dart';
+
+@JsonSerializable()
 class ProductModel {
   final String id;
   final String name;
+  @JsonKey(
+    fromJson: UrlUtils.pathToUrl
+  )
   final String imgUrl;
   final String detail;
   final int price;
@@ -15,17 +22,7 @@ class ProductModel {
     required this.detail,
     required this.price
   });
-
-
-  factory ProductModel.fromModel({
-    required Map<String, dynamic> json
-  }) {
-    return ProductModel(
-        id: json['id'],
-        name: json['name'],
-        imgUrl: 'http://$ip${json['imgUrl']}',
-        detail: json['detail'],
-        price: json['price']
-    );
-  }
+  
+  factory ProductModel.fromJson(Map<String, dynamic> json)
+  => _$ProductModelFromJson(json);
 }
