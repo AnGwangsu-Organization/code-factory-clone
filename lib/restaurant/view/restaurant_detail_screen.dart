@@ -1,9 +1,11 @@
 import 'package:code_factory_clone/common/const/data.dart';
+import 'package:code_factory_clone/common/dio/dio.dart';
 import 'package:code_factory_clone/common/layout/default_layout.dart';
 import 'package:code_factory_clone/product/component/product_card.dart';
 import 'package:code_factory_clone/product/model/product_model.dart';
 import 'package:code_factory_clone/restaurant/component/restaurant_card.dart';
 import 'package:code_factory_clone/restaurant/model/restaurant_detail_model.dart';
+import 'package:code_factory_clone/restaurant/repository/restaurant_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -15,42 +17,41 @@ class RestaurantDetailScreen extends StatelessWidget {
     super.key
   });
 
-  Future<Map<String, dynamic>> getRestaurantDetail() async {
+  Future<RestaurantDetailModel> getRestaurantDetail() async {
     final dio = Dio();
-    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-    final res = await dio.get('http://$ip/restaurant/$id',
-      options: Options(
-        headers: {
-          'authorization': 'Bearer $accessToken'
-        }
+
+    dio.interceptors.add(
+      CustomInterceptor(
+        storage: storage
       )
     );
-    return res.data;
+
+    final repository = RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
+
+    return repository.getRestaurantDetail(id: id);
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
         title: '불타는 떡볶이',
-        child: FutureBuilder<Map<String, dynamic>>(
+        child: FutureBuilder<RestaurantDetailModel>(
           future: getRestaurantDetail(),
-          builder: (_, AsyncSnapshot<Map<String, dynamic>> snapshop) {
+          builder: (_, AsyncSnapshot<RestaurantDetailModel> snapshop) {
             if(!snapshop.hasData) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            
-            final item = RestaurantDetailModel.fromJson(snapshop.data!);
-            
+
             return CustomScrollView(
               slivers: [
                 renderTop(
-                  model: item
+                  model: snapshop.data!
                 ),
                 renderLabel(),
                 renderProducts(
-                  products: item.products
+                  products: snapshop.data!.products
                 )
               ],
             );
