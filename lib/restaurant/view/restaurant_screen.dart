@@ -1,5 +1,4 @@
-import 'package:code_factory_clone/common/const/data.dart';
-import 'package:code_factory_clone/common/dio/dio.dart';
+import 'package:code_factory_clone/common/model/cursor_pagination_model.dart';
 import 'package:code_factory_clone/restaurant/component/restaurant_card.dart';
 import 'package:code_factory_clone/restaurant/model/restaurant_model.dart';
 import 'package:code_factory_clone/restaurant/repository/restaurant_repository.dart';
@@ -11,23 +10,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RestaurantScreen extends ConsumerWidget {
   const RestaurantScreen({super.key});
 
-  Future<List<RestaurantModel>> paginateRestaurant(WidgetRef ref) async {
-    final dio = ref.watch(dioProvider);
-
-    final res = await RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant').paginate();
-
-    return res.data;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultLayout(
       child: Center(
         child:Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: FutureBuilder(
-            future: paginateRestaurant(ref),
-            builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
+          child: FutureBuilder<CursorPaginationModel<RestaurantModel>>(
+            future: ref.watch(restaurantRepositoryProvider).paginate(),
+            builder: (context, AsyncSnapshot<CursorPaginationModel<RestaurantModel>> snapshot) {
               if(!snapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -35,9 +26,9 @@ class RestaurantScreen extends ConsumerWidget {
               }
 
               return ListView.separated(itemBuilder: (_, index) {
-                    final pItem = snapshot.data![index];
+                    final pItem = snapshot.data!.data[index];
 
-                    return GestureDetector(
+                    return GestureDetector( // card와 같은 섹션을 클릭했을때 Gesture가 발생하는 widget
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -53,7 +44,7 @@ class RestaurantScreen extends ConsumerWidget {
                   separatorBuilder: (_, index) {
                     return const SizedBox(height: 16);
                   },
-                  itemCount: snapshot.data!.length);
+                  itemCount: snapshot.data!.data.length);
             }
           )
         )
